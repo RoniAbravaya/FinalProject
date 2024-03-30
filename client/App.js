@@ -3,7 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native'; 
 import { createNativeStackNavigator } from '@react-navigation/native-stack'; 
 import Home from './Components/Home';
-import LoginRegister from './Components/LoginRegister';
+import Login from './Components/Login';
+import Register from './Components/Register';
 import Auth from './auth/Auth';
 import React, { useState, createContext } from 'react';
 
@@ -15,16 +16,18 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [token, setToken] = useState(null); 
+  console.log(AuthContext)
   return (
-    <NavigationContainer> 
-      <AuthContext.Provider value={{ token, setToken }}>
-        <Stack.Navigator> 
-          <Stack.Screen name="Auth" component={Auth} />
-          <Stack.Screen name="Home" component={Home} />
-          <Stack.Screen name="LoginRegister" component={LoginRegister} />
+    <AuthContext.Provider value={{ token, setToken }}>
+    <NavigationContainer>
+      <Stack.Navigator>
+      <Stack.Screen name="Auth" component={Auth} options={{ headerShown: false }} />
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Home" component={Home} />
         </Stack.Navigator>
-      </AuthContext.Provider>
     </NavigationContainer>
+  </AuthContext.Provider>
   );
 }
 

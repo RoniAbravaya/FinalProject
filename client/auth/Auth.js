@@ -4,7 +4,9 @@ import { AuthContext } from "../App";
 import { BASE_URL } from "../App";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, Text, View } from 'react-native';
-import LoginRegister from '../Components/LoginRegister';
+import Login from '../Components/Login';
+import Home from "../Components/Home";
+
 
 const Auth = (props) => {
     const { setToken } = useContext(AuthContext);
@@ -21,12 +23,12 @@ const Auth = (props) => {
             });
             if(response.status === 200) {
                 setToken(response.data);
-                setRedirect(true);
+                navigation.navigate("Home");
             }
             
         } catch (error) {
             setRedirect(false);
-            navigation.navigate("LoginRegister");
+            navigation.navigate("Login");
         }
     }
 
