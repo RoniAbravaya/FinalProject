@@ -2,6 +2,10 @@ import { createRecipe, deleteRecipe, editRecipe, searchRecipe, getAllRecipes } f
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
+import express from 'express';
+import bodyParser from "body-parser";
+import cors from "cors";
+import axios from "axios";
 dotenv.config();
 
 // Function to create a new recipe
@@ -70,12 +74,13 @@ export const _searchRecipe = async (req, res) => {
 // Function to get all recipes
 export const _getAllRecipes = async (req, res) => {
   try {
-    const recipes = await getAllRecipes();
+    const recipes = await getAllRecipes(); // Remove 'res' argument from here
     console.log(req);
     
     const recipeArray = Array.isArray(recipes) ? recipes : [recipes];
 
-    res.json(recipeArray);
+    
+    return recipes;
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Failed to get all recipes' });

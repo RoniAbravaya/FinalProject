@@ -1,49 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, TouchableOpacity, Text, StyleSheet, FlatList } from "react-native"; // Added FlatList import
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "../App";
+import { AuthContext } from "../App";
 
 export default function HomeScreen(props) {
   const [activeTab, setActiveTab] = useState(0);
   const [recipes, setRecipes] = useState([]);
+  const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    fetchRecipes();
+    fetchRecipes(token);
   }, []);
 
-  const fetchRecipes = async () => {
+  const fetchRecipes = async (token) => {
     try {
       const response = await axios.get(`${BASE_URL}/recipes/all`, {
         headers: {
           "Content-Type": "application/json",
-          withCredentials: true
+          Authorization: `Bearer ${token}`,
         },
+        withCredentials: true,
       });
-      setRecipes(response.data); // Access data directly from the response
+  
+      if (response && response.data) {
+        setRecipes(response.data);
+      } else {
+        console.error("Failed to fetch recipes.");
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching recipes:", error);
     }
   };
   
-
   const handleTabPress = (index) => {
     setActiveTab(index);
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.tab, activeTab === item.recipe_id && styles.activeTab]}
-      onPress={() => handleTabPress(item.recipe_id)}
-    >
-      <Text>{item.recipe_name}</Text>
-    </TouchableOpacity>
+    <View style={styles.row}>
+      <Text style={styles.recipeName}>{item.recipe_name}</Text>
+      <Text style={styles.ingredients}>{item.ingredients}</Text>
+      <Text style={styles.instructions}>{item.instructions}</Text>
+    </View>
   );
 
   return (
     <View style={styles.container}>
-      {/* Your main content here */}
-
       {/* Navigation */}
       <View style={styles.navigation}>
         <TouchableOpacity
@@ -66,14 +70,12 @@ export default function HomeScreen(props) {
             color={activeTab === 1 ? "#29fd" : "#000"}
           />
         </TouchableOpacity>
-
         <TouchableOpacity
           style={[styles.tab, activeTab === 3 && styles.activeTab]}
           onPress={() => handleTabPress(3)}
         >
           <Text style={[styles.plusIcon, activeTab === 3 && styles.activeTabText]}>+</Text>
         </TouchableOpacity>
-        
         <View style={styles.indicator}>
           <View style={styles.indicatorInner} />
         </View>
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   plusIcon: {
-    fontSize: 32, // Adjusted font size for a bigger plus sign
+    fontSize: 32,
     color: "#000",
   },
   indicator: {
@@ -131,5 +133,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     borderColor: "#29fd",
+  },
+  row: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  recipeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  ingredients: {
+    marginBottom: 5,
+  },
+  instructions: {
+    fontStyle: "italic",
   },
 });
