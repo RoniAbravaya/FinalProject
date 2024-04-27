@@ -9,11 +9,20 @@ import bodyParser from "body-parser";
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:8081', // Allow requests from frontend origin
+  origin: 'http://localhost:8081',
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'User_Email'],
   credentials: true
 }));
+
+app.options('*', (req, res) => {
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8081');
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, User_Email');
+  res.sendStatus(200);
+});
+
+
 
 dotenv.config();
 // app.use(cors(corsOptions));

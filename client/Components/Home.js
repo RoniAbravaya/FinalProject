@@ -4,6 +4,10 @@ import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
 import { BASE_URL } from "../App";
 import { AuthContext } from "../App";
+import { jwtDecode } from "jwt-decode";
+import "core-js/stable/atob";
+import { decode } from "base-64";
+// import  jwtDecode  from "jsonwebtoken";
 
 export default function HomeScreen(props) {
   const [activeTab, setActiveTab] = useState(0);
@@ -12,6 +16,7 @@ export default function HomeScreen(props) {
 
   useEffect(() => {
     fetchRecipes(token);
+    fetchUserRecipes(token);
   }, []);
 
   const fetchRecipes = async (token) => {
@@ -33,9 +38,79 @@ export default function HomeScreen(props) {
       console.error("Error fetching recipes:", error);
     }
   };
+
+  const fetchAndDecodeToken = async () => {
+    try {
+        // Fetch the token from /users/verify
+        const verifyResponse = await axios.get(BASE_URL + "/users/verify", {
+            withCredentials: true,
+        });
+
+        if (verifyResponse.status !== 200) {
+            console.error("Failed to verify user.");
+            return null;
+        }
+
+        const token = verifyResponse.data.token; // Assuming the token is present in the response data
+
+        // Decode the token to get the user's ID
+        const decodedToken = jwtDecode(token);
+        const useremail = decodedToken?.useremail; // Extract user email safely
+      
+        if (!useremail) {
+            console.error("User email not found in token.");
+            return null;
+        }
+
+        return { token, useremail };
+    } catch (error) {
+        console.error("Error fetching and decoding token:", error);
+        return null;
+    }
+};
+
+
+const fetchUserRecipes = async () => {
+  try {
+    const tokenData = await fetchAndDecodeToken();
+
+    if (!tokenData) {
+      console.error("Failed to fetch and decode token.");
+      return;
+    }
+
+    const { token, useremail } = tokenData;
+
+    // Make the API request with the user's email and token
+    const response = await axios.get(`${BASE_URL}/recipes/${useremail}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, // Use the fetched token here
+        user_email: useremail, // Include the user_email in the headers
+      },
+      withCredentials: true,
+    });
+
+    if (response && response.data) {
+      setRecipes(response.data);
+    } else {
+      console.error("Failed to fetch recipes.");
+    }
+  } catch (error) {
+    console.error("Error fetching recipes:", error);
+  }
+};
+
   
+  
+
   const handleTabPress = (index) => {
     setActiveTab(index);
+    if (index === 0) {
+      fetchRecipes(token); // Call fetchRecipes if the index is 0
+    } else if (index === 1) {
+      fetchUserRecipes(token); // Call fetchUserRecipes if the index is 1
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -53,6 +128,8 @@ export default function HomeScreen(props) {
         <TouchableOpacity
           style={[styles.tab, activeTab === 0 && styles.activeTab]}
           onPress={() => handleTabPress(0)}
+          onPressIn={() => handleTabPress(0)} // Added onPressIn event
+          onClick={() => handleTabPress(0)} // Added onClick event
         >
           <Ionicons
             name="home-outline"
@@ -63,6 +140,8 @@ export default function HomeScreen(props) {
         <TouchableOpacity
           style={[styles.tab, activeTab === 1 && styles.activeTab]}
           onPress={() => handleTabPress(1)}
+          onPressIn={() => handleTabPress(1)} // Added onPressIn event
+          onClick={() => handleTabPress(1)} // Added onClick event
         >
           <Ionicons
             name="person-outline"

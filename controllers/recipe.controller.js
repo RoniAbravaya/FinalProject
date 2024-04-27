@@ -1,4 +1,4 @@
-import { createRecipe, deleteRecipe, editRecipe, searchRecipe, getAllRecipes } from "../models/recipemodels.js";
+import { createRecipe, deleteRecipe, editRecipe, searchRecipe, getAllRecipes,getRecipesByUserId, getRecipesByUserEmail } from "../models/recipemodels.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
@@ -86,3 +86,46 @@ export const _getAllRecipes = async (req, res) => {
     res.status(500).json({ msg: 'Failed to get all recipes' });
   }
 };
+
+
+
+// Function to get recipes by user ID
+export const _getRecipesByUserId = async (req, res) => {
+  try {
+    const { user_id } = req.params; // Accessing user_id from req.params
+
+    if (!user_id) {
+      return res.status(400).json({ msg: 'User ID is required' });
+    }
+
+    const recipes = await getRecipesByUserId(user_id);
+    const recipeArray = Array.isArray(recipes) ? recipes : [recipes];
+    
+    res.json(recipeArray);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Failed to get recipes by user ID' });
+  }
+};
+
+// Function to get recipes by user email
+export const _getRecipesByUserEmail = async (req, res, next) => {
+  try {
+    const { user_email } = req.params; // Accessing user_email from req.params
+
+    if (!user_email) {
+      return res.status(400).json({ msg: 'User email is required' });
+    }
+
+    const recipes = await getRecipesByUserEmail(user_email);
+    const recipeArray = Array.isArray(recipes) ? recipes : [recipes];
+    
+    res.json(recipeArray);
+    next
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: 'Failed to get recipes by user email' });
+  }
+};
+
+

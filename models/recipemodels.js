@@ -21,3 +21,12 @@ export const searchRecipe = (keyword) => {
 export const getAllRecipes = () => {
     return db("recipe").select('*');
 };
+
+export const getRecipesByUserId = (user_id) => {
+    return db("recipe").select('*').where({user_id : user_id });
+};
+
+
+export const getRecipesByUserEmail = (user_email) => {
+    return db("recipe").select('*').where('user_email', '=', user_email);
+};

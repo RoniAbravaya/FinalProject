@@ -1,9 +1,11 @@
 import express from "express";
-import { _createRecipe, _deleteRecipe, _editRecipe, _searchRecipe, _getAllRecipes } from "../controllers/recipe.controller.js";
+import { _createRecipe, _deleteRecipe, _editRecipe, _searchRecipe, _getAllRecipes,_getRecipesByUserId, _getRecipesByUserEmail} from "../controllers/recipe.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 const router = express.Router();
+
+const { user_id } = []
 
 dotenv.config();
 
@@ -21,6 +23,19 @@ router.get(`/all`,verifyToken , (req, res) => {
         .then(recipe => res.json(recipe))
         .catch(error => res.status(500).json({ msg: 'Failed to get all recipes' }));
 });
+
+// router.get('/:user_id', verifyToken, (req, res) => {
+//     const { user_id } = req.params; // Accessing user_id from req.params
+//     _getRecipesByUserId(req, res); // Calling _getRecipesByUserId with req and res
+// });
+
+router.get('/:user_email', verifyToken, (req, res) => {
+    const { user_email } = req.params; // Accessing user_id from req.params
+    _getRecipesByUserEmail(req, res); // Calling _getRecipesByUserId with req and res
+});
+
+
+
 
 router.get(`/verify`,verifyToken , (req,res) => {
 
