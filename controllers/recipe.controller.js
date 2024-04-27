@@ -10,10 +10,10 @@ dotenv.config();
 
 // Function to create a new recipe
 export const _createRecipe = async (req, res) => {
-  const { recipeName, ingredients, instructions, userId } = req.body;
+  const { recipeName, ingredients, instructions, user_email } = req.body;
   
   try {
-    const recipe = await createRecipe(recipeName, ingredients, instructions, userId);
+    const recipe = await createRecipe(recipeName, ingredients, instructions, user_email);
     res.json(recipe);
   } catch (error) {
     console.error(error);
@@ -42,10 +42,10 @@ export const _deleteRecipe = async (req, res) => {
 // Function to edit a recipe
 export const _editRecipe = async (req, res) => {
   const { recipeId } = req.params;
-  const { recipeName, ingredients, instructions } = req.body;
+  const { recipeName, ingredients, instructions , likes } = req.body;
   
   try {
-    const updated = await editRecipe(recipeId, recipeName, ingredients, instructions);
+    const updated = await editRecipe(recipeId, recipeName, ingredients, instructions ,likes);
 
     if (updated) {
       res.json({ msg: 'Recipe updated successfully' });
@@ -92,13 +92,13 @@ export const _getAllRecipes = async (req, res) => {
 // Function to get recipes by user ID
 export const _getRecipesByUserId = async (req, res) => {
   try {
-    const { user_id } = req.params; // Accessing user_id from req.params
+    const { recipe_id } = req.params; // Accessing user_id from req.params
 
-    if (!user_id) {
+    if (!recipe_id) {
       return res.status(400).json({ msg: 'User ID is required' });
     }
 
-    const recipes = await getRecipesByUserId(user_id);
+    const recipes = await getRecipesByUserId(recipe_id);
     const recipeArray = Array.isArray(recipes) ? recipes : [recipes];
     
     res.json(recipeArray);

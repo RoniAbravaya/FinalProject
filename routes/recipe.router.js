@@ -24,16 +24,18 @@ router.get(`/all`,verifyToken , (req, res) => {
         .catch(error => res.status(500).json({ msg: 'Failed to get all recipes' }));
 });
 
-// router.get('/:user_id', verifyToken, (req, res) => {
-//     const { user_id } = req.params; // Accessing user_id from req.params
-//     _getRecipesByUserId(req, res); // Calling _getRecipesByUserId with req and res
-// });
+
 
 router.get('/:user_email', verifyToken, (req, res) => {
     const { user_email } = req.params; // Accessing user_id from req.params
     _getRecipesByUserEmail(req, res); // Calling _getRecipesByUserId with req and res
 });
 
+
+router.get('/id/:recipe_id', verifyToken, (req, res) => {
+    const { recipe_id } = req.params; // Accessing user_id from req.params
+    _getRecipesByUserId(req, res); // Calling _getRecipesByUserId with req and res
+});
 
 
 

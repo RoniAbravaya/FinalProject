@@ -10,16 +10,17 @@ const app = express();
 
 app.use(cors({
   origin: 'http://localhost:8081',
-  methods: ['GET', 'POST'],
+  methods: ['GET', 'POST', 'DELETE' , 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization', 'User_Email'],
   credentials: true
 }));
 
+// Route handler for OPTIONS preflight requests
 app.options('*', (req, res) => {
   res.set('Access-Control-Allow-Origin', 'http://localhost:8081');
-  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE , PUT');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, User_Email');
-  res.sendStatus(200);
+  res.sendStatus(204);
 });
 
 
