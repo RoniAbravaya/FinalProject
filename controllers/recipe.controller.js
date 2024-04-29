@@ -1,7 +1,7 @@
 import { createRecipe, deleteRecipe, editRecipe, searchRecipe, getAllRecipes,getRecipesByUserId, getRecipesByUserEmail } from "../models/recipemodels.js";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import express from 'express';
 import bodyParser from "body-parser";
 import cors from "cors";
