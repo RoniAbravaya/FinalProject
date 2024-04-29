@@ -15,7 +15,10 @@ export const editRecipe = (recipeId, recipeName, ingredients, instructions ,like
 };
 
 export const searchRecipe = (keyword) => {
-    return db("recipe").select('*').where('recipe_name', 'ilike', `%${keyword}%`);
+    return db("recipe")
+        .select('*')
+        .where('recipe_name', 'ilike', `%${keyword}%`)
+        .orWhere('ingredients', 'ilike', `%${keyword}%`);
 };
 
 export const getAllRecipes = () => {

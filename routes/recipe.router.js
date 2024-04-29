@@ -14,9 +14,9 @@ router.delete(`/:recipeId`, verifyToken, _deleteRecipe);
 router.put(`/:recipeId`, verifyToken, _editRecipe);
 router.get(`/search`, verifyToken, (req, res) => {
     const { keyword } = req.query;
-    _searchRecipe(keyword)
-        .then(recipe => res.json(recipe))
-        .catch(error => res.status(500).json({ msg: 'Failed to search for recipes' }));
+    _searchRecipe(req, res);
+//         .then(recipe => res.json(recipe))
+//         .catch(error => res.status(500).json({ msg: 'Failed to search for recipes' }));
 });
 router.get(`/all`,verifyToken , (req, res) => {
     _getAllRecipes()

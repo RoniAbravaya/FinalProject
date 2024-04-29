@@ -17,6 +17,7 @@ export default function HomeScreen(props) {
   const [ingredients, setIngredients] = useState(""); 
   const [instructions, setInstructions] = useState(""); 
   const [editingRecipeId, setEditingRecipeId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
 
   useEffect(() => {
@@ -109,16 +110,44 @@ const fetchUserRecipes = async () => {
 const handleTabPress = (index) => {
   setActiveTab(index);
   if (index === 0) {
-    fetchRecipes(token); // Call fetchRecipes if the index is 0
+    fetchRecipes(token);
   } else if (index === 1) {
-    fetchUserRecipes(token); // Call fetchUserRecipes if the index is 1
+    fetchUserRecipes(token);
   } else if (index === 3) {
-    // Clear form fields when user clicks on the tab with index 3
     setRecipeName("");
     setIngredients("");
     setInstructions("");
+  } else if (index === 5) {
+    // Handle search tab, clear the recipes and set search query
+    setRecipes([]);
+    setSearchQuery("");
   }
 };
+
+const handleSearch = async () => {
+  try {
+    // Fetch recipes based on search query
+    const response = await axios.get(`${BASE_URL}/recipes/search`, {
+      params: {
+        keyword: searchQuery // Send keyword as a query parameter
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+
+    if (response && response.data) {
+      setRecipes(response.data);
+    } else {
+      console.error("No recipes found matching the search query.");
+    }
+  } catch (error) {
+    console.error("Error searching recipes:", error);
+  }
+};
+
 
 const handleSubmit = async () => {
   try {
@@ -403,6 +432,17 @@ return (
       >
         <Text style={[styles.plusIcon, activeTab === 3 && styles.activeTabText]}>+</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+  style={[styles.tab, activeTab === 5 && styles.activeTab]} // Update activeTab check
+  onPress={() => handleTabPress(5)} // Update tab press handler
+>
+  <Ionicons
+    name="search-outline" // Change icon to represent search
+    size={24}
+    color={activeTab === 1 ? "#29fd" : "#000"} // Update color for active and inactive states
+  />
+</TouchableOpacity>
       <View style={styles.indicator}>
         <View style={styles.indicatorInner} />
       </View>
@@ -414,6 +454,21 @@ return (
       renderItem={renderItem}
       keyExtractor={(item) => item.recipe_id.toString()}
     />
+
+          {/* Search Form */}
+          {activeTab === 5 && (
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search Recipe"
+            onChangeText={(text) => setSearchQuery(text)}
+            value={searchQuery}
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+            <Text style={styles.searchButtonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
     {/* Form */}{/* Form for creating a new recipe */}
       {activeTab === 3 && (
@@ -522,6 +577,32 @@ indicatorInner: {
   borderRadius: 8,
   borderWidth: 2,
   borderColor: "#29fd",
+},
+searchContainer: {
+  padding: 20,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  borderTopWidth: 1,
+  borderTopColor: "#ccc",
+},
+searchInput: {
+  flex: 1,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 5,
+  padding: 10,
+  marginRight: 10,
+},
+searchButton: {
+  backgroundColor: "#29fd",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 5,
+},
+searchButtonText: {
+  color: "#fff",
+  fontWeight: "bold",
 },
 row: {
   borderBottomWidth: 1,
