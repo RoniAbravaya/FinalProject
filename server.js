@@ -8,20 +8,23 @@ import bodyParser from "body-parser";
 
 const app = express();
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'DELETE' , 'PUT'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'User_Email'],
-  credentials: true
-}));
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, User_Email");
+  res.header("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
-// Route handler for OPTIONS preflight requests
+// Handle preflight requests
 app.options('*', (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE , PUT');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, User_Email');
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, User_Email");
+  res.header("Access-Control-Allow-Credentials", "true");
   res.sendStatus(204);
 });
+
 
 
 
@@ -34,6 +37,7 @@ dotenv.config();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 
 app.listen(process.env.PORT || 3001, () => {
