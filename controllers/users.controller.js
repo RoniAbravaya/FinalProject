@@ -42,11 +42,11 @@ export const _login = async (req, res) => {
         const secret = process.env.ACCESS_TOKEN_SECERT;
 
         const accesstoken = jwt.sign({ userId, useremail}, secret, {
-            expiresIn:"60s"
+            expiresIn:"600s"
         });
 
         res.cookie("token",accesstoken, {
-            maxAge:60 * 1000,
+            maxAge:60 * 10000,
             httponly: true,
         });
 
