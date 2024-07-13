@@ -2,15 +2,28 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const verifyToken = (req, res , next) => {
+export const verifyToken = (req, res, next) => {
     const accesstoken = req.cookies.token;
 
     console.log("Access Token =", accesstoken);
 
-    if (!accesstoken) return res.status(401).json( {msg: `unautorized`});
+    if (!accesstoken) {
+        // Set default values when no token is provided
+        req.userid = 'default_user_id';
+        req.useremail = 'default_user_email';
+        console.log("No access token provided. Using default values.");
+        return next();
+    }
 
-    jwt.verify(accesstoken, process.env.ACCESS_TOKEN_SECERT , (err,decode) => {
-        if(err) return res.status(403).json( {msg: `forbiden`});
+    jwt.verify(accesstoken, process.env.ACCESS_TOKEN_SECRET, (err, decode) => {
+        if (err) {
+            // Set default values when token verification fails
+            req.userid = 'default_user_id';
+            req.useremail = 'default_user_email';
+            console.log("Token verification failed. Using default values.");
+            return next();
+        }
+
         req.userid = decode.userid;
         req.useremail = decode.useremail;
 
