@@ -9,7 +9,7 @@ import bodyParser from "body-parser";
 const app = express();
 
 app.use(cors({
-  origin: 'https://main--merry-bombolone-baad66.netlify.app',
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE' , 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization', 'User_Email'],
   credentials: true
@@ -17,7 +17,7 @@ app.use(cors({
 
 // Route handler for OPTIONS preflight requests
 app.options('*', (req, res) => {
-  res.set('Access-Control-Allow-Origin', 'https://main--merry-bombolone-baad66.netlify.app');
+  res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, POST, DELETE , PUT');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, User_Email');
   res.sendStatus(204);
